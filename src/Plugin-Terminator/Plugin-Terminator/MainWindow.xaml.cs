@@ -123,48 +123,147 @@ namespace Plugin_Terminator
 
         private void btnListPlugins_Click(object sender, RoutedEventArgs e)
         {
-            getAllPluginAssemblies();
+            var pluginAssemblies = getAllPluginAssemblies();
+            dgPluginAssemblies.ItemsSource = pluginAssemblies.Select(p => new { Id = p.Id, Name = p.GetAttributeValue<string>("name") });
         }
 
-        private List<string> getAllPluginAssemblies()
+        private DataCollection<Entity> getAllPluginAssemblies()
         {
             QueryExpression userSettingsQuery = new QueryExpression("pluginassembly");
-            userSettingsQuery.ColumnSet.AllColumns = true;
+            userSettingsQuery.ColumnSet.AllColumns = false;
+            userSettingsQuery.ColumnSet.AddColumn("name");
 
             var retrieveRequest = new RetrieveMultipleRequest()
             {
                 Query = userSettingsQuery
             };
 
+            EntityCollection EntCol = null;
+
             if (_svcClient.IsReady)
             {
-                EntityCollection EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveRequest) as RetrieveMultipleResponse).EntityCollection;
+                EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveRequest) as RetrieveMultipleResponse).EntityCollection;
             }
-                        
-            return null;
+
+            return EntCol.Entities;
+        }
+
+        private void DeletePlugin(Guid selectedPluginAssemblyId)
+        {
+            var pluginTypes = GetPluginTypes(selectedPluginAssemblyId);
+
+            DeletePluginTypes(pluginTypes);
+
+            DeletePluginAssembly(selectedPluginAssemblyId);
         }
 
         private EntityCollection GetPluginTypes(Guid pluginAssemblyId)
         {
-            QueryExpression userSettingsQuery = new QueryExpression("plugintype");
-            userSettingsQuery.ColumnSet.AllColumns = true;
-            userSettingsQuery.Criteria.AddCondition(new ConditionExpression()
+            var pluginTypeQuery = new QueryExpression
             {
-                AttributeName = "pluginassemblyid",
-                Operator = ConditionOperator.Equal
-            });
+                EntityName = "plugintype",
+                Criteria =
+                {
+                    FilterOperator = LogicalOperator.And,
+                    Conditions ={
+                                    new ConditionExpression
+                                        {
+                                            AttributeName = "pluginassemblyid",
+                                            Operator = ConditionOperator.Equal,
+                                            Values = { pluginAssemblyId }
+                                        },
+                                }
+                }
+            };
 
             var retrieveMultipleRequest = new RetrieveMultipleRequest()
             {
-                Query = userSettingsQuery
+                Query = pluginTypeQuery
             };
+            EntityCollection EntCol = null;
 
             if (_svcClient.IsReady)
             {
-                EntityCollection EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveMultipleRequest) as RetrieveMultipleResponse).EntityCollection;
+                EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveMultipleRequest) as RetrieveMultipleResponse).EntityCollection;
             }
 
-            return null;
+            return EntCol;
+        }
+
+        private void DeletePluginTypes(EntityCollection pluginTypes)
+        {
+            foreach (var pluginType in pluginTypes.Entities)
+            {
+                DeletePluginSteps(pluginType.Id);
+
+                _svcClient.DeleteEntity("plugintype", pluginType.Id);
+            }
+        }
+
+        private void DeletePluginSteps(Guid pluginTypeId)
+        {
+            var pluginSteps = GetPluginSteps(pluginTypeId);
+
+            if (pluginSteps.Entities.Count <= 0)
+            {
+                return;
+            }
+
+            foreach (var pluginStep in pluginSteps.Entities)
+            {
+                _svcClient.DeleteEntity(pluginStep.LogicalName, pluginStep.Id);
+            }
+        }
+
+        private void DeletePluginAssembly(Guid pluginAssemblyId)
+        {
+            if (pluginAssemblyId != null)
+            {
+                _svcClient.DeleteEntity("pluginassembly", pluginAssemblyId);
+            }
+        }
+
+        private EntityCollection GetPluginSteps(Guid pluginTypeId)
+        {
+            var pluginStepQuery = new QueryExpression
+            {
+                EntityName = "sdkmessageprocessingstep",
+                Criteria =
+                {
+                    FilterOperator = LogicalOperator.And,
+                    Conditions = {
+                                    new ConditionExpression
+                                        {
+                                            AttributeName = "plugintypeid",
+                                            Operator = ConditionOperator.Equal,
+                                            Values = {pluginTypeId}
+                                        },
+                                }
+                }
+            };
+
+            var retrieveMultipleRequest = new RetrieveMultipleRequest()
+            {
+                Query = pluginStepQuery
+            };
+
+            EntityCollection EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveMultipleRequest) as RetrieveMultipleResponse).EntityCollection;
+
+            return EntCol;
+        }
+
+        private void btnDeletePlugin_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgPluginAssemblies.SelectedIndex == -1)
+            {
+                MessageBox.Show("A plugin must be selected to delete.");
+                return;
+            }
+            else
+            {
+                dynamic selectedPlugin = dgPluginAssemblies.SelectedItem;
+                DeletePlugin(selectedPlugin.Id);
+            }
         }
     }
 }
