@@ -1,4 +1,8 @@
-﻿using Plugin_Terminator.LoginWindow;
+﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
+using Plugin_Terminator.LoginWindow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +25,8 @@ namespace Plugin_Terminator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private CrmServiceClient _svcClient;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -52,7 +58,7 @@ namespace Plugin_Terminator
             #region CRMServiceClient
             if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
             {
-                //                CrmServiceClient svcClient = ctrl.CrmConnectionMgr.CrmSvc;
+                _svcClient = ctrl.CrmConnectionMgr.CrmSvc;
                 //                if (svcClient.IsReady)
                 //                {
                 //                    // Get data from CRM . 
@@ -115,5 +121,50 @@ namespace Plugin_Terminator
             }
         }
 
+        private void btnListPlugins_Click(object sender, RoutedEventArgs e)
+        {
+            getAllPluginAssemblies();
+        }
+
+        private List<string> getAllPluginAssemblies()
+        {
+            QueryExpression userSettingsQuery = new QueryExpression("pluginassembly");
+            userSettingsQuery.ColumnSet.AllColumns = true;
+
+            var retrieveRequest = new RetrieveMultipleRequest()
+            {
+                Query = userSettingsQuery
+            };
+
+            if (_svcClient.IsReady)
+            {
+                EntityCollection EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveRequest) as RetrieveMultipleResponse).EntityCollection;
+            }
+                        
+            return null;
+        }
+
+        private EntityCollection GetPluginTypes(Guid pluginAssemblyId)
+        {
+            QueryExpression userSettingsQuery = new QueryExpression("plugintype");
+            userSettingsQuery.ColumnSet.AllColumns = true;
+            userSettingsQuery.Criteria.AddCondition(new ConditionExpression()
+            {
+                AttributeName = "pluginassemblyid",
+                Operator = ConditionOperator.Equal
+            });
+
+            var retrieveMultipleRequest = new RetrieveMultipleRequest()
+            {
+                Query = userSettingsQuery
+            };
+
+            if (_svcClient.IsReady)
+            {
+                EntityCollection EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveMultipleRequest) as RetrieveMultipleResponse).EntityCollection;
+            }
+
+            return null;
+        }
     }
 }

@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Button Content="Login to CRM" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="92" Click="LoginButton_Click"/>
+        <Button Content="Login to CRM" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="107" Click="LoginButton_Click"/>
+        <Button x:Name="btnListPlugins" Content="List Plugins" HorizontalAlignment="Left" Margin="131,11,0,0" VerticalAlignment="Top" Width="135" Click="btnListPlugins_Click"/>
 
     </Grid>
 </Window>
