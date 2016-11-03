@@ -262,8 +262,19 @@ namespace Plugin_Terminator
             else
             {
                 dynamic selectedPlugin = dgPluginAssemblies.SelectedItem;
-                DeletePlugin(selectedPlugin.Id);
+
+                Log($"Plugin Selected : {selectedPlugin.Name}");
+                Log("Delete Plugin - Started...");
+
+                //DeletePlugin(selectedPlugin.Id);
+
+                Log("Delete Plugin - Completed.");
             }
+        }
+
+        private void Log(string logMessage)
+        {
+            txtLog.Text += logMessage + Environment.NewLine;
         }
     }
 }
