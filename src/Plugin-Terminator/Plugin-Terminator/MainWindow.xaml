@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Plugin Terminator" Height="539.1" Width="979.502"
         x:Name="mainWindow"
-        Background="White">
+        Background="White" WindowStyle="ThreeDBorderWindow">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
@@ -18,16 +18,19 @@
         </DockPanel>
         <StackPanel Grid.Row="1" Margin="5">
             <StackPanel Orientation="Horizontal" Height="250">
-                <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" VerticalAlignment="Top" Height="250" Width="795" HorizontalGridLinesBrush="LightGray"  
-                  SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*" Background="White" RowDetailsVisibilityMode="Collapsed">
-                    <DataGrid.RowStyle>                      
+                <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" VerticalAlignment="Top" Height="250" Width="795" RowHeaderWidth="0" 
+                  SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*" Background="White" RowDetailsVisibilityMode="Collapsed" GridLinesVisibility="All"
+                          HorizontalGridLinesBrush="#A0A0A0">
+                    <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Setter Property="BorderBrush" Value="LightGray" />
                             <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="Margin" Value="0,0,-1,0"></Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="BorderBrush" Value="LightBlue" />                                    
+                                    <Setter Property="Background" Value="#F9F99F" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="LightBlue"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

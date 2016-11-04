@@ -255,9 +255,16 @@ namespace Plugin_Terminator
             }
             else
             {
+                ClearLog();
+
                 dynamic selectedPlugin = dgPluginAssemblies.SelectedItem;
 
-                ClearLog();
+                MessageBoxResult messageBoxResult = MessageBox.Show($"Do you want to delete the selected plugin {selectedPlugin.Name} in Org {_svcClient.ConnectedOrgFriendlyName} in server {_svcClient.CrmConnectOrgUriActual.Host}?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+                if (messageBoxResult == MessageBoxResult.No)
+                {
+                    return;
+                }               
+                                
                 Log($"Plugin Selected : {selectedPlugin.Name}");
                 Log("Delete Plugin - Started...");
 
