@@ -3,18 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Plugin Terminator" Height="539.1" Width="979.502">
     <Grid>
-        <Button Content="Login to CRM" HorizontalAlignment="Left" Margin="17,10,0,0" VerticalAlignment="Top" Width="107" Click="LoginButton_Click"/>
-        <Button x:Name="btnListPlugins" Content="List Plugins" HorizontalAlignment="Left" Margin="148,10,0,0" VerticalAlignment="Top" Width="135" Click="btnListPlugins_Click"/>
-        <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Height="247" Width="795" 
+        <DockPanel>
+            <Menu DockPanel.Dock="Top" IsMainMenu="True">
+                <MenuItem x:Name="mnuLogin" Header="Login" Click="mnuLogin_Click"/>
+                <MenuItem x:Name="mnuListAssemblies" Header="List Assemblies" Click="mnuListAssemblies_Click"/>
+            </Menu>
+        </DockPanel>
+        <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Height="247" Width="795" 
                   SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Id}" Header="Id" Visibility="Hidden"/>
                 <DataGridTextColumn Binding="{Binding Name}" Header="Plugin Assembly Name"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Button x:Name="btnDeletePlugin" Content="Delete Plugin" HorizontalAlignment="Left" Margin="825,146,0,0" VerticalAlignment="Top" Width="121" Height="49" Click="btnDeletePlugin_Click"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="201" Margin="10,300,0,0" VerticalAlignment="Top" Width="795">
-            <TextBlock x:Name="txtLog" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="181" Width="775" Margin="9.2,9.2,0,0" Foreground="Gray" Padding="10,0,0,0"/>
-        </Border>
+        <Button x:Name="btnDeletePlugin" Content="Delete Plugin" HorizontalAlignment="Left" Margin="822,128,0,0" VerticalAlignment="Top" Width="121" Height="49" Click="btnDeletePlugin_Click"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="201" Margin="10,289,0,0" VerticalAlignment="Top" Width="795">
+            <TextBlock x:Name="txtLog" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="181" Width="775" Margin="9,9,0,0" Foreground="Gray" Padding="10,0,0,0"/>
+        </Border>        
     </Grid>
 </Window>

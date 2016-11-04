@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Microsoft Dynamics CRM SDK Templates")]
-[assembly: AssemblyDescription("The Microsoft Dynamics CRM SDK Templates provide project and item templates for creating a number of SDK centric CRM components.  This template package provides project templates for Unified Service Desk Features and Package Deployment packages.")]
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft Dynamics© CRM")]
-[assembly: AssemblyCopyright("© 2015 Microsoft Corporation. All rights reserved")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("© 2016 Charmis Varghese")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

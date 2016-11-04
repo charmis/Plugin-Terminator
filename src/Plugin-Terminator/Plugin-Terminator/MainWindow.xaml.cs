@@ -30,6 +30,13 @@ namespace Plugin_Terminator
         public MainWindow()
         {
             InitializeComponent();
+
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            LogintoCRM();
         }
 
         /// <summary>
@@ -39,26 +46,8 @@ namespace Plugin_Terminator
         /// <param name="e"></param>
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            #region Login Control
-            // Establish the Login control
-            CrmLogin ctrl = new CrmLogin();
-            // Wire Event to login response. 
-            ctrl.ConnectionToCrmCompleted += ctrl_ConnectionToCrmCompleted;
-            // Show the dialog. 
-            ctrl.ShowDialog();
-
-            // Handel return. 
-            if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
-                MessageBox.Show("Good Connect");
-            else
-                MessageBox.Show("BadConnect");
-
-            #endregion
-
             #region CRMServiceClient
-            if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
-            {
-                _svcClient = ctrl.CrmConnectionMgr.CrmSvc;
+           
                 //                if (svcClient.IsReady)
                 //                {
                 //                    // Get data from CRM . 
@@ -99,7 +88,7 @@ namespace Plugin_Terminator
 
                 //                    MessageBox.Show(string.Format("New Record Created {0}", guAcctId));
                 //}
-            }
+            
             #endregion
 
 
@@ -122,6 +111,11 @@ namespace Plugin_Terminator
         }
 
         private void btnListPlugins_Click(object sender, RoutedEventArgs e)
+        {
+            ListPluginAssemblies();
+        }
+
+        private void ListPluginAssemblies()
         {
             var pluginAssemblies = getAllPluginAssemblies();
             dgPluginAssemblies.ItemsSource = pluginAssemblies.Select(p => new { Id = p.Id, Name = p.GetAttributeValue<string>("name") });
@@ -263,6 +257,7 @@ namespace Plugin_Terminator
             {
                 dynamic selectedPlugin = dgPluginAssemblies.SelectedItem;
 
+                ClearLog();
                 Log($"Plugin Selected : {selectedPlugin.Name}");
                 Log("Delete Plugin - Started...");
 
@@ -275,6 +270,46 @@ namespace Plugin_Terminator
         private void Log(string logMessage)
         {
             txtLog.Text += logMessage + Environment.NewLine;
+        }
+
+        private void ClearLog()
+        {
+            txtLog.Text = string.Empty;
+        }
+
+        private void mnuLogin_Click(object sender, RoutedEventArgs e)
+        {
+            LogintoCRM();
+        }
+
+        private void LogintoCRM()
+        {
+            // Establish the Login control
+            CrmLogin ctrl = new CrmLogin();
+            // Wire Event to login response. 
+            ctrl.ConnectionToCrmCompleted += ctrl_ConnectionToCrmCompleted;
+            // Show the dialog. 
+            ctrl.ShowDialog();
+
+            // Handel return. 
+            if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
+            {
+                MessageBox.Show("Good Connect");
+            }
+            else
+            {
+                MessageBox.Show("Bad Connect");
+            }
+
+            if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
+            {
+                _svcClient = ctrl.CrmConnectionMgr.CrmSvc;
+            }
+        }
+
+        private void mnuListAssemblies_Click(object sender, RoutedEventArgs e)
+        {
+            ListPluginAssemblies();
         }
     }
 }
