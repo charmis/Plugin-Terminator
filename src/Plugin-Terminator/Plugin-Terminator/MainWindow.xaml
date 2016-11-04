@@ -1,24 +1,53 @@
 ﻿<Window x:Class="Plugin_Terminator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Plugin Terminator" Height="539.1" Width="979.502">
+        Title="Plugin Terminator" Height="539.1" Width="979.502"
+        x:Name="mainWindow"
+        Background="White">
     <Grid>
-        <DockPanel>
-            <Menu DockPanel.Dock="Top" IsMainMenu="True">
-                <MenuItem x:Name="mnuLogin" Header="Login" Click="mnuLogin_Click"/>
-                <MenuItem x:Name="mnuListAssemblies" Header="List Assemblies" Click="mnuListAssemblies_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem x:Name="mnuLogin" Header="Login" Click="mnuLogin_Click" BorderBrush="LightGray" BorderThickness="1"/>
+                <MenuItem x:Name="mnuListAssemblies" Header="List Assemblies" Click="mnuListAssemblies_Click" BorderBrush="LightGray" BorderThickness="1"/>
             </Menu>
         </DockPanel>
-        <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Height="247" Width="795" 
-                  SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*">
-            <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Id}" Header="Id" Visibility="Hidden"/>
-                <DataGridTextColumn Binding="{Binding Name}" Header="Plugin Assembly Name"/>
-            </DataGrid.Columns>
-        </DataGrid>
-        <Button x:Name="btnDeletePlugin" Content="Delete Plugin" HorizontalAlignment="Left" Margin="822,128,0,0" VerticalAlignment="Top" Width="121" Height="49" Click="btnDeletePlugin_Click"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="201" Margin="10,289,0,0" VerticalAlignment="Top" Width="795">
-            <TextBlock x:Name="txtLog" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="181" Width="775" Margin="9,9,0,0" Foreground="Gray" Padding="10,0,0,0"/>
-        </Border>        
+        <StackPanel Grid.Row="1" Margin="5">
+            <StackPanel Orientation="Horizontal" Height="250">
+                <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" VerticalAlignment="Top" Height="250" Width="795" HorizontalGridLinesBrush="LightGray"  
+                  SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*" Background="White" RowDetailsVisibilityMode="Collapsed">
+                    <DataGrid.RowStyle>                      
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="BorderBrush" Value="LightGray" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Margin" Value="0,0,-1,0"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="LightBlue" />                                    
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Id}" Header="Id" Visibility="Hidden"/>
+                        <DataGridTextColumn Binding="{Binding Name}" Header="Plugin Assembly Name"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button x:Name="btnDeletePlugin" Content="Delete Plugin" Width="120" Height="50" Click="btnDeletePlugin_Click" BorderBrush="Red" Background="Red" Padding="0" Margin="25,0,0,0"/>
+            </StackPanel>
+            <Border BorderBrush="DarkGray" BorderThickness="1" HorizontalAlignment="Left" Height="200" VerticalAlignment="Top" Width="795" Margin="0,5,0,0">
+                <TextBlock x:Name="txtLog" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="181" Width="775" Foreground="Gray" Padding="10,0,0,0"/>
+            </Border>
+        </StackPanel>
     </Grid>
 </Window>
