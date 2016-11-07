@@ -340,7 +340,7 @@ namespace Plugin_Terminator
             {
                 _svcClient = ctrl.CrmConnectionMgr.CrmSvc;
 
-                ((MainWindow)Application.Current.MainWindow).Title += " Connected";
+                ((MainWindow)Application.Current.MainWindow).Title += $": Connected to {_svcClient.CrmConnectOrgUriActual.Host} : {_svcClient.ConnectedOrgFriendlyName}";
 
             }
         }
