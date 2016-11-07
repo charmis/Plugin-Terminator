@@ -5,6 +5,7 @@ using Microsoft.Xrm.Tooling.Connector;
 using Plugin_Terminator.LoginWindow;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,48 +48,48 @@ namespace Plugin_Terminator
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             #region CRMServiceClient
-           
-                //                if (svcClient.IsReady)
-                //                {
-                //                    // Get data from CRM . 
-                //                    string FetchXML =
-                //                        @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
-                //                        <entity name='account'>
-                //                            <attribute name='name' />
-                //                            <attribute name='primarycontactid' />
-                //                            <attribute name='telephone1' />
-                //                            <attribute name='accountid' />
-                //                            <order attribute='name' descending='false' />
-                //                          </entity>
-                //                        </fetch>";
 
-                //                    var Result = svcClient.GetEntityDataByFetchSearchEC(FetchXML);
-                //                    if (Result != null)
-                //                    {
-                //                        MessageBox.Show(string.Format("Found {0} records\nFirst Record name is {1}", Result.Entities.Count, Result.Entities.FirstOrDefault().GetAttributeValue<string>("name")));
-                //                    }
+            //                if (svcClient.IsReady)
+            //                {
+            //                    // Get data from CRM . 
+            //                    string FetchXML =
+            //                        @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
+            //                        <entity name='account'>
+            //                            <attribute name='name' />
+            //                            <attribute name='primarycontactid' />
+            //                            <attribute name='telephone1' />
+            //                            <attribute name='accountid' />
+            //                            <order attribute='name' descending='false' />
+            //                          </entity>
+            //                        </fetch>";
 
-
-                //                    // Core API using SDK OOTB 
-                //                    CreateRequest req = new CreateRequest();
-                //                    Entity accENt = new Entity("account");
-                //                    accENt.Attributes.Add("name", "TESTFOO");
-                //                    req.Target = accENt;
-                //                    CreateResponse res = (CreateResponse)svcClient.OrganizationServiceProxy.Execute(req);
-                //                    //CreateResponse res = (CreateResponse)svcClient.ExecuteCrmOrganizationRequest(req, "MyAccountCreate");
-                //                    MessageBox.Show(res.id.ToString());
+            //                    var Result = svcClient.GetEntityDataByFetchSearchEC(FetchXML);
+            //                    if (Result != null)
+            //                    {
+            //                        MessageBox.Show(string.Format("Found {0} records\nFirst Record name is {1}", Result.Entities.Count, Result.Entities.FirstOrDefault().GetAttributeValue<string>("name")));
+            //                    }
 
 
+            //                    // Core API using SDK OOTB 
+            //                    CreateRequest req = new CreateRequest();
+            //                    Entity accENt = new Entity("account");
+            //                    accENt.Attributes.Add("name", "TESTFOO");
+            //                    req.Target = accENt;
+            //                    CreateResponse res = (CreateResponse)svcClient.OrganizationServiceProxy.Execute(req);
+            //                    //CreateResponse res = (CreateResponse)svcClient.ExecuteCrmOrganizationRequest(req, "MyAccountCreate");
+            //                    MessageBox.Show(res.id.ToString());
 
-                //                    // Using Xrm.Tooling helpers. 
-                //                    Dictionary<string, CrmDataTypeWrapper> newFields = new Dictionary<string, CrmDataTypeWrapper>();
-                //                    // Create a new Record. - Account 
-                //                    newFields.Add("name", new CrmDataTypeWrapper("CrudTestAccount", CrmFieldType.String));
-                //                    Guid guAcctId = svcClient.CreateNewRecord("account", newFields);
 
-                //                    MessageBox.Show(string.Format("New Record Created {0}", guAcctId));
-                //}
-            
+
+            //                    // Using Xrm.Tooling helpers. 
+            //                    Dictionary<string, CrmDataTypeWrapper> newFields = new Dictionary<string, CrmDataTypeWrapper>();
+            //                    // Create a new Record. - Account 
+            //                    newFields.Add("name", new CrmDataTypeWrapper("CrudTestAccount", CrmFieldType.String));
+            //                    Guid guAcctId = svcClient.CreateNewRecord("account", newFields);
+
+            //                    MessageBox.Show(string.Format("New Record Created {0}", guAcctId));
+            //}
+
             #endregion
 
 
@@ -118,7 +119,11 @@ namespace Plugin_Terminator
         private void ListPluginAssemblies()
         {
             var pluginAssemblies = getAllPluginAssemblies();
-            dgPluginAssemblies.ItemsSource = pluginAssemblies.Select(p => new { Id = p.Id, Name = p.GetAttributeValue<string>("name") });
+            dgPluginAssemblies.ItemsSource = pluginAssemblies.Select(p => new
+            {
+                Id = p.Id,
+                Name = p.GetAttributeValue<string>("name")
+            });
         }
 
         private DataCollection<Entity> getAllPluginAssemblies()
@@ -126,7 +131,20 @@ namespace Plugin_Terminator
             QueryExpression userSettingsQuery = new QueryExpression("pluginassembly");
             userSettingsQuery.ColumnSet.AllColumns = false;
             userSettingsQuery.ColumnSet.AddColumn("name");
-
+            
+            userSettingsQuery.Criteria = new FilterExpression
+            {
+                FilterOperator = LogicalOperator.And,
+                Conditions ={
+                    new ConditionExpression
+                    {
+                        AttributeName = "name",
+                        Operator = ConditionOperator.DoesNotBeginWith,
+                        Values = { "Microsoft" }
+                    }
+                }
+            };
+            
             var retrieveRequest = new RetrieveMultipleRequest()
             {
                 Query = userSettingsQuery
@@ -136,19 +154,29 @@ namespace Plugin_Terminator
 
             if (_svcClient.IsReady)
             {
-                EntCol = (_svcClient.ExecuteCrmOrganizationRequest(retrieveRequest) as RetrieveMultipleResponse).EntityCollection;
+                var response = _svcClient.ExecuteCrmOrganizationRequest(retrieveRequest) as RetrieveMultipleResponse;
+
+                EntCol = response.EntityCollection;
             }
 
-            return EntCol.Entities;
+            return EntCol?.Entities;
         }
 
         private void DeletePlugin(Guid selectedPluginAssemblyId)
         {
+            Stopwatch _totalTimeElapsed = Stopwatch.StartNew();
+
             var pluginTypes = GetPluginTypes(selectedPluginAssemblyId);
 
             DeletePluginTypes(pluginTypes);
 
             DeletePluginAssembly(selectedPluginAssemblyId);
+
+            _totalTimeElapsed.Stop();
+
+            Log($"Time elapsed : {_totalTimeElapsed.Elapsed.TotalSeconds} seconds.");
+
+            ListPluginAssemblies();
         }
 
         private EntityCollection GetPluginTypes(Guid pluginAssemblyId)
@@ -263,8 +291,8 @@ namespace Plugin_Terminator
                 if (messageBoxResult == MessageBoxResult.No)
                 {
                     return;
-                }               
-                                
+                }
+
                 Log($"Plugin Selected : {selectedPlugin.Name}");
                 Log("Delete Plugin - Started...");
 
@@ -311,6 +339,9 @@ namespace Plugin_Terminator
             if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
             {
                 _svcClient = ctrl.CrmConnectionMgr.CrmSvc;
+
+                ((MainWindow)Application.Current.MainWindow).Title += " Connected";
+
             }
         }
 

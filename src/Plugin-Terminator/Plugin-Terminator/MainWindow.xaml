@@ -19,25 +19,22 @@
         <StackPanel Grid.Row="1" Margin="5">
             <StackPanel Orientation="Horizontal" Height="250">
                 <DataGrid x:Name="dgPluginAssemblies" HorizontalAlignment="Left" VerticalAlignment="Top" Height="250" Width="795" RowHeaderWidth="0" 
-                  SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*" Background="White" RowDetailsVisibilityMode="Collapsed" GridLinesVisibility="All"
-                          HorizontalGridLinesBrush="#A0A0A0">
+                  SelectionMode="Single" SelectionUnit="FullRow" AutoGenerateColumns="False" ColumnWidth="*" Background="White" RowDetailsVisibilityMode="Collapsed" GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#A0A0A0" RowHeight="20">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="BorderBrush" Value="LightGray" />
-                            <Setter Property="BorderThickness" Value="0" />
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="#F9F99F" />
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="LightBlue"/>
+                                    <Setter Property="Background" Value="#0593ff"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell">
-                            <Setter Property="BorderBrush" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="0" />
                         </Style>
                     </DataGrid.CellStyle>
