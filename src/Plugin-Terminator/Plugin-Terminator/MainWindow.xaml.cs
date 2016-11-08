@@ -326,22 +326,11 @@ namespace Plugin_Terminator
             // Show the dialog. 
             ctrl.ShowDialog();
 
-            // Handel return. 
-            if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
-            {
-                MessageBox.Show("Good Connect");
-            }
-            else
-            {
-                MessageBox.Show("Bad Connect");
-            }
-
             if (ctrl.CrmConnectionMgr != null && ctrl.CrmConnectionMgr.CrmSvc != null && ctrl.CrmConnectionMgr.CrmSvc.IsReady)
             {
                 _svcClient = ctrl.CrmConnectionMgr.CrmSvc;
 
                 ((MainWindow)Application.Current.MainWindow).Title += $": Connected to {_svcClient.CrmConnectOrgUriActual.Host} : {_svcClient.ConnectedOrgFriendlyName}";
-
             }
         }
 
