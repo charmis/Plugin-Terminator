@@ -6,6 +6,7 @@ using Plugin_Terminator.LoginWindow;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -17,6 +18,8 @@ namespace Plugin_Terminator
     public partial class MainWindow : Window
     {
         private CrmServiceClient _svcClient;
+        private TaskScheduler _mainThreadScheduler = null;
+
 
         public MainWindow()
         {
@@ -211,6 +214,8 @@ namespace Plugin_Terminator
 
         private async void btnDeletePlugin_Click(object sender, RoutedEventArgs e)
         {
+            _mainThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
             if (dgPluginAssemblies.SelectedIndex == -1)
             {
                 MessageBox.Show("A plugin must be selected to delete.");
@@ -229,18 +234,20 @@ namespace Plugin_Terminator
                 }
 
                 Log($"Plugin Selected : {selectedPlugin.Name}");
-                Log("Delete Plugin - Started...");
+                Log("Delete Plugin - Started...");               
 
                 Guid pluginId = selectedPlugin.Id;
                 await Task.Run(() => DeletePlugin(pluginId));
-                //deleteTask.Wait();
                 Log("Delete Plugin - Completed.");
             }
         }
 
         private void Log(string logMessage)
         {
-            txtLog.Text += logMessage + Environment.NewLine;
+            Task.Factory.StartNew(() =>
+            {
+                txtLog.Text += logMessage + Environment.NewLine;
+            }, CancellationToken.None, TaskCreationOptions.None, _mainThreadScheduler);
         }
 
         private void ClearLog()
