@@ -108,13 +108,13 @@ namespace Plugin_Terminator
 
             DeletePluginTypes(pluginTypes);
 
+            Log("Deleting Plugin Assembly...");
+
             DeletePluginAssembly(selectedPluginAssemblyId);
 
             _totalTimeElapsed.Stop();
 
             Log($"Time elapsed : {_totalTimeElapsed.Elapsed.TotalSeconds} seconds.");
-
-            ListPluginAssemblies();
         }
 
         private EntityCollection GetPluginTypes(Guid pluginAssemblyId)
@@ -156,6 +156,7 @@ namespace Plugin_Terminator
             {
                 DeletePluginSteps(pluginType.Id);
 
+                Log("Deleting PluginTypes - " + pluginType.LogicalName);
                 _svcClient.DeleteEntity("plugintype", pluginType.Id);
             }
         }
@@ -171,6 +172,7 @@ namespace Plugin_Terminator
 
             foreach (var pluginStep in pluginSteps.Entities)
             {
+                Log("Deleting PluginSteps - " + pluginStep.LogicalName);
                 _svcClient.DeleteEntity(pluginStep.LogicalName, pluginStep.Id);
             }
         }
@@ -239,6 +241,7 @@ namespace Plugin_Terminator
                 Guid pluginId = selectedPlugin.Id;
                 await Task.Run(() => DeletePlugin(pluginId));
                 Log("Delete Plugin - Completed.");
+                ListPluginAssemblies();
             }
         }
 
